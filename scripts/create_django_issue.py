@@ -93,14 +93,16 @@ def get_all_latest_django_versions(
         _django_max_version = django_max_version
 
     print("Fetching all Django versions from PyPI")
-    base_txt = REQUIREMENTS_DIR / "base.txt"
-    with base_txt.open() as f:
-        for line in f.readlines():
-            if "django==" in line.lower():
-                break
-        else:
-            print(f"django not found in {base_txt}")  # Huh...?
-            sys.exit(1)
+    env_requirements = ["local.txt", "production.txt"]
+    for env_requirement in env_requirements:
+        requirements_txt = REQUIREMENTS_DIR / env_requirement
+        with requirements_txt.open() as f:
+            for line in f.readlines():
+                if "django==" in line.lower():
+                    break
+            else:
+                print(f"django not found in {requirements_txt}")  # Huh...?
+                sys.exit(1)
 
     # Begin parsing and verification
     _, current_version_str = get_name_and_version(line)

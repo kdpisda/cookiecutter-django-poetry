@@ -1,4 +1,4 @@
-# Cookiecutter Django
+# Cookiecutter Django Poetry
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/cookiecutter/cookiecutter-django/ci.yml?branch=master)](https://github.com/cookiecutter/cookiecutter-django/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Documentation Status](https://readthedocs.org/projects/cookiecutter-django/badge/?version=latest)](https://cookiecutter-django.readthedocs.io/en/latest/?badge=latest)
@@ -9,7 +9,7 @@
 [![Join our Discord](https://img.shields.io/badge/Discord-cookiecutter-5865F2?style=flat&logo=discord&logoColor=white)](https://discord.gg/uFXweDQc5a)
 [![Code Helpers Badge](https://www.codetriage.com/cookiecutter/cookiecutter-django/badges/users.svg)](https://www.codetriage.com/cookiecutter/cookiecutter-django)
 
-Powered by [Cookiecutter](https://github.com/cookiecutter/cookiecutter), Cookiecutter Django is a framework for jumpstarting
+Powered by [Cookiecutter](https://github.com/cookiecutter/cookiecutter), Cookiecutter Django Poetry is a framework for jumpstarting
 production-ready Django projects quickly.
 
 - Documentation: <https://cookiecutter-django.readthedocs.io/en/latest/>
@@ -90,7 +90,7 @@ First, get Cookiecutter. Trust me, it's awesome:
 
 Now run it against this repo:
 
-    $ cookiecutter https://github.com/cookiecutter/cookiecutter-django
+    $ cookiecutter https://github.com/kdpisda/cookiecutter-django-poetry
 
 You'll be prompted for some values. Provide them, then a Django project will be created for you.
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 NOTE:
     the below code is to be maintained Python 2.x-compatible
@@ -10,6 +11,7 @@ TODO: restrict Cookiecutter Django project initialization
 from __future__ import print_function
 
 import sys
+import subprocess
 
 TERMINATOR = "\x1b[0m"
 WARNING = "\x1b[1;33m [WARNING]: "
@@ -25,44 +27,59 @@ SUCCESS = "\x1b[1;32m [SUCCESS]: "
 {{ cookiecutter.update({ "email": cookiecutter.email | trim }) }}
 """
 
-project_slug = "{{ cookiecutter.project_slug }}"
-if hasattr(project_slug, "isidentifier"):
-    assert project_slug.isidentifier(), "'{}' project slug is not a valid Python identifier.".format(project_slug)
 
-assert project_slug == project_slug.lower(), "'{}' project slug should be all lowercase".format(project_slug)
+def check_poetry_installed():
+    try:
+        subprocess.check_output(["poetry", "--version"])
+    except FileNotFoundError:
+        sys.stderr.write("Poetry is not installed. Please install it from https://python-poetry.org and try again.\n")
+        sys.exit(1)
 
-assert "\\" not in "{{ cookiecutter.author_name }}", "Don't include backslashes in author name."
 
-if "{{ cookiecutter.use_docker }}".lower() == "n":
-    python_major_version = sys.version_info[0]
-    if python_major_version == 2:
-        print(
-            WARNING + "You're running cookiecutter under Python 2, but the generated "
-            "project requires Python 3.11+. Do you want to proceed (y/n)? " + TERMINATOR
-        )
-        yes_options, no_options = frozenset(["y"]), frozenset(["n"])
-        while True:
-            choice = raw_input().lower()  # noqa: F821
-            if choice in yes_options:
-                break
+def main():
+    check_poetry_installed()
+    project_slug = "{{ cookiecutter.project_slug }}"
+    if hasattr(project_slug, "isidentifier"):
+        assert project_slug.isidentifier(), "'{}' project slug is not a valid Python identifier.".format(project_slug)
 
-            elif choice in no_options:
-                print(INFO + "Generation process stopped as requested." + TERMINATOR)
-                sys.exit(1)
-            else:
-                print(
-                    HINT
-                    + "Please respond with {} or {}: ".format(
-                        ", ".join(["'{}'".format(o) for o in yes_options if not o == ""]),
-                        ", ".join(["'{}'".format(o) for o in no_options if not o == ""]),
+    assert project_slug == project_slug.lower(), "'{}' project slug should be all lowercase".format(project_slug)
+
+    assert "\\" not in "{{ cookiecutter.author_name }}", "Don't include backslashes in author name."
+
+    if "{{ cookiecutter.use_docker }}".lower() == "n":
+        python_major_version = sys.version_info[0]
+        if python_major_version == 2:
+            print(
+                WARNING + "You're running cookiecutter under Python 2, but the generated "
+                          "project requires Python 3.11+. Do you want to proceed (y/n)? " + TERMINATOR
+            )
+            yes_options, no_options = frozenset(["y"]), frozenset(["n"])
+            while True:
+                choice = raw_input().lower()  # noqa: F821
+                if choice in yes_options:
+                    break
+
+                elif choice in no_options:
+                    print(INFO + "Generation process stopped as requested." + TERMINATOR)
+                    sys.exit(1)
+                else:
+                    print(
+                        HINT
+                        + "Please respond with {} or {}: ".format(
+                            ", ".join(["'{}'".format(o) for o in yes_options if not o == ""]),
+                            ", ".join(["'{}'".format(o) for o in no_options if not o == ""]),
+                        )
+                        + TERMINATOR
                     )
-                    + TERMINATOR
-                )
 
-if "{{ cookiecutter.use_whitenoise }}".lower() == "n" and "{{ cookiecutter.cloud_provider }}" == "None":
-    print("You should either use Whitenoise or select a " "Cloud Provider to serve static files")
-    sys.exit(1)
+    if "{{ cookiecutter.use_whitenoise }}".lower() == "n" and "{{ cookiecutter.cloud_provider }}" == "None":
+        print("You should either use Whitenoise or select a " "Cloud Provider to serve static files")
+        sys.exit(1)
 
-if "{{ cookiecutter.mail_service }}" == "Amazon SES" and "{{ cookiecutter.cloud_provider }}" != "AWS":
-    print("You should either use AWS or select a different " "Mail Service for sending emails.")
-    sys.exit(1)
+    if "{{ cookiecutter.mail_service }}" == "Amazon SES" and "{{ cookiecutter.cloud_provider }}" != "AWS":
+        print("You should either use AWS or select a different " "Mail Service for sending emails.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

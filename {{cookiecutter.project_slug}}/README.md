@@ -2,7 +2,7 @@
 
 {{ cookiecutter.description }}
 
-[![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
+[![Built with Cookiecutter Django Poetry](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 {%- if cookiecutter.open_source_license != "Not open source" %}
@@ -15,6 +15,13 @@ License: {{cookiecutter.open_source_license}}
 Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
 
 ## Basic Commands
+
+### Setting the environment and installing the requirements
+
+```shell
+$ poetry shell
+$ poetry install
+```
 
 ### Setting Up Your Users
 
