@@ -10,8 +10,8 @@ TODO: restrict Cookiecutter Django project initialization
 """
 from __future__ import print_function
 
-import sys
 import subprocess
+import sys
 
 TERMINATOR = "\x1b[0m"
 WARNING = "\x1b[1;33m [WARNING]: "
@@ -51,7 +51,7 @@ def main():
         if python_major_version == 2:
             print(
                 WARNING + "You're running cookiecutter under Python 2, but the generated "
-                          "project requires Python 3.11+. Do you want to proceed (y/n)? " + TERMINATOR
+                "project requires Python 3.11+. Do you want to proceed (y/n)? " + TERMINATOR
             )
             yes_options, no_options = frozenset(["y"]), frozenset(["n"])
             while True:
