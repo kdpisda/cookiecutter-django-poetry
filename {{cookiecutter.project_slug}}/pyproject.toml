@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "{{ cookiecutter.project_slug }}"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+version = "{{ cookiecutter.version }}"
+description = "{{ cookiecutter.description }}"
+authors = ["{{ cookiecutter.author }} <{{ cookiecutter.author_email }}>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 pytz = "2023.3"
 python-slugify = "8.0.1"
 Pillow = "9.5.0"
@@ -20,29 +20,82 @@ crispy-bootstrap5 = "0.7"
 django-redis = "5.2.0"
 
 # Optional dependencies
-{% if cookiecutter.frontend_pipeline == 'Django Compressor' %}
-{% if cookiecutter.windows == 'y' and cookiecutter.use_docker == 'n' %}
+{%- if cookiecutter.frontend_pipeline == 'Django Compressor' -%}
+{%- if cookiecutter.windows == 'y' and cookiecutter.use_docker == 'n' -%}
 rcssmin = "1.1.0"
-{% else %}
+{%- else -%}
 rcssmin = "1.1.1"
-{% endif %}
-{% endif %}
-{% if cookiecutter.use_whitenoise == 'y' %}
+{%- endif -%}
+{%- endif -%}
+
+{%- if cookiecutter.use_whitenoise == 'y' -%}
 whitenoise = "6.4.0"
-{% endif %}
-{% if cookiecutter.use_docker == "y" or cookiecutter.windows == "n" %}
+{%- endif -%}
+
+{%- if cookiecutter.use_docker == "y" or cookiecutter.windows == "n" -%}
 hiredis = "2.2.2"
-{% endif %}
-{% if cookiecutter.use_celery == "y" %}
+{%- endif -%}
+
+{%- if cookiecutter.use_celery == "y" -%}
 celery = "5.2.7"
 django-celery-beat = "2.5.0"
-{% if cookiecutter.use_docker == 'y' %}
+{%- if cookiecutter.use_docker == 'y' -%}
 flower = "1.2.0"
-{% endif %}
-{% endif %}
-{% if cookiecutter.use_async == 'y' %}
+{%- endif -%}
+{%- endif -%}
+
+{%- if cookiecutter.use_async == 'y' -%}
 uvicorn = {extras = ["standard"], version = "0.21.1"}
-{% endif %}
+{%- endif -%}
+
+# Production Dependencies
+gunicorn={version="^20.1.0",extras=["production"]}
+psycopg2={version="^2.6.9",extras=["production"]}
+
+{%- if cookiecutter.use_whitenoise == 'n' -%}
+collectfast={version="^2.2.0",extras=["production"]}
+{%- endif -%}
+
+{%- if cookiecutter.use_sentry == "y" -%}
+sentry-sdk={version="^1.20.0",extras=["django"]}
+{%- endif -%}
+
+{%- if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" -%}
+hiredis={version="^2.2.2",extras=["production"]}
+{%- endif -%}
+
+{%- if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" -%}
+hiredis = { version = "^2.2.2", extras = ["production"] }
+{%- endif -%}
+
+{%- if cookiecutter.cloud_provider == 'AWS' -%}
+django-storages = { version = "^1.13.2", extras = ["boto3", "production"] }
+{%- elif cookiecutter.cloud_provider == 'GCP' -%}
+django-storages = { version = "^1.13.2", extras = ["google", "production"] }
+{%- elif cookiecutter.cloud_provider == 'Azure' -%}
+django-storages = { version = "^1.13.2", extras = ["azure", "production"] }
+{%- endif -%}
+
+{%- if cookiecutter.mail_service == 'Mailgun' -%}
+django-anymail = { version = "^9.1", extras = ["mailgun", "production"] }
+{%- elif cookiecutter.mail_service == 'Amazon SES' -%}
+django-anymail = { version = "^9.1", extras = ["amazon_ses", "production"] }
+{%- elif cookiecutter.mail_service == 'Mailjet' -%}
+django-anymail = { version = "^9.1", extras = ["mailjet", "production"] }
+{%- elif cookiecutter.mail_service == 'Mandrill' -%}
+django-anymail = { version = "^9.1", extras = ["mandrill", "production"] }
+{%- elif cookiecutter.mail_service == 'Postmark' -%}
+django-anymail = { version = "^9.1", extras = ["postmark", "production"] }
+{%- elif cookiecutter.mail_service == 'Sendgrid' -%}
+django-anymail = { version = "^9.1", extras = ["sendgrid", "production"] }
+{%- elif cookiecutter.mail_service == 'SendinBlue' -%}
+django-anymail = { version = "^9.1", extras = ["sendinblue", "production"] }
+{%- elif cookiecutter.mail_service == 'SparkPost' -%}
+django-anymail = { version = "^9.1", extras = ["sparkpost", "production"] }
+{%- elif cookiecutter.mail_service == 'Other SMTP' -%}
+django-anymail = { version = "^9.1", extras = ["production"] }
+{%- endif -%}
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -56,9 +109,9 @@ python_files = [
     "tests.py",
     "test_*.py",
 ]
-{%- if cookiecutter.frontend_pipeline == 'Gulp' %}
+{%- if cookiecutter.frontend_pipeline == 'Gulp' -%}
 norecursedirs = ["node_modules"]
-{%- endif %}
+{%- endif -%}
 
 # ==== Coverage ====
 [tool.coverage.run]
@@ -95,9 +148,9 @@ warn_redundant_casts = true
 warn_unused_configs = true
 plugins = [
     "mypy_django_plugin.main",
-{%- if cookiecutter.use_drf == "y" %}
+{%- if cookiecutter.use_drf == "y" -%}
     "mypy_drf_plugin.main",
-{%- endif %}
+{%- endif -%}
 ]
 
 [[tool.mypy.overrides]]
@@ -113,9 +166,9 @@ django_settings_module = "config.settings.test"
 [tool.pylint.MASTER]
 load-plugins = [
     "pylint_django",
-{%- if cookiecutter.use_celery == "y" %}
+{%- if cookiecutter.use_celery == "y" -%}
     "pylint_celery",
-{%- endif %}
+{%- endif -%}
 ]
 django-settings-module = "config.settings.local"
 
@@ -144,23 +197,26 @@ generated-members = [
 [tool.poetry.dev-dependencies]
 Werkzeug = {extras = ["watchdog"], version = "2.2.3"}
 ipdb = "0.13.13"
-{% if cookiecutter.use_docker == 'y' %}
+
+{%- if cookiecutter.use_docker == 'y' -%}
 psycopg2 = "2.9.6"
-{% else %}
+{%- else -%}
 psycopg2-binary = "2.9.6"
-{% endif %}
-{% if cookiecutter.use_async == 'y' or cookiecutter.use_celery == 'y' %}
+{%- endif -%}
+
+{%- if cookiecutter.use_async == 'y' or cookiecutter.use_celery == 'y' -%}
 watchfiles = "0.19.0"
-{% endif %}
+{%- endif -%}
 
 # Testing
 mypy = "1.1.1"
 django-stubs = "1.16.0"
 pytest = "7.3.1"
 pytest-sugar = "0.9.7"
-{% if cookiecutter.use_drf == "y" %}
+
+{%- if cookiecutter.use_drf == "y" -%}
 djangorestframework-stubs = "1.10.0"
-{% endif %}
+{%- endif -%}
 
 # Documentation
 sphinx = "6.1.3"
@@ -172,9 +228,11 @@ flake8-isort = "6.0.0"
 coverage = "7.2.2"
 black = "23.3.0"
 pylint-django = "2.5.3"
-{% if cookiecutter.use_celery == 'y' %}
+
+{%- if cookiecutter.use_celery == 'y' -%}
 pylint-celery = "0.3"
-{% endif %}
+{%- endif -%}
+
 pre-commit = "3.2.2"
 
 # Django
@@ -183,45 +241,3 @@ django-debug-toolbar = "4.0.0"
 django-extensions = "3.2.1"
 django-coverage-plugin = "3.0.0"
 pytest-django = "4.5.2"
-
-[tool.poetry.extras]
-production = [
-    "gunicorn==20.1.0",
-    "psycopg2==2.9.6",
-    {% if cookiecutter.use_whitenoise == 'n' %}
-    "Collectfast==2.2.0",
-    {% endif %}
-    {% if cookiecutter.use_sentry == "y" %}
-    "sentry-sdk==1.20.0",
-    {% endif %}
-    {% if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" %}
-    "hiredis==2.2.2",
-    {% endif %}
-    # Django
-    {% if cookiecutter.cloud_provider == 'AWS' %}
-    "django-storages[boto3]==1.13.2",
-    {% elif cookiecutter.cloud_provider == 'GCP' %}
-    "django-storages[google]==1.13.2",
-    {% elif cookiecutter.cloud_provider == 'Azure' %}
-    "django-storages[azure]==1.13.2",
-    {% endif %}
-    {% if cookiecutter.mail_service == 'Mailgun' %}
-    "django-anymail[mailgun]==9.1",
-    {% elif cookiecutter.mail_service == 'Amazon SES' %}
-    "django-anymail[amazon_ses]==9.1",
-    {% elif cookiecutter.mail_service == 'Mailjet' %}
-    "django-anymail[mailjet]==9.1",
-    {% elif cookiecutter.mail_service == 'Mandrill' %}
-    "django-anymail[mandrill]==9.1",
-    {% elif cookiecutter.mail_service == 'Postmark' %}
-    "django-anymail[postmark]==9.1",
-    {% elif cookiecutter.mail_service == 'Sendgrid' %}
-    "django-anymail[sendgrid]==9.1",
-    {% elif cookiecutter.mail_service == 'SendinBlue' %}
-    "django-anymail[sendinblue]==9.1",
-    {% elif cookiecutter.mail_service == 'SparkPost' %}
-    "django-anymail[sparkpost]==9.1",
-    {% elif cookiecutter.mail_service == 'Other SMTP' %}
-    "django-anymail==9.1",
-    {% endif %}
-]
