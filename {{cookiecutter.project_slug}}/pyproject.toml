@@ -96,6 +96,16 @@ django-anymail = { version = "^9.1", extras = ["sparkpost", "production"] }
 django-anymail = { version = "^9.1", extras = ["production"] }
 {% endif %}
 
+[tool.poetry.extras]
+production = [
+  "gunicorn",
+  "psycopg2",
+  {% if cookiecutter.use_whitenoise == 'n' %}"collectfast",{% endif %}
+  {% if cookiecutter.use_sentry == "y" %}"sentry-sdk",{% endif %}
+  {% if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" %}"hiredis",{% endif %}
+  "django-storages",
+  "django-anymail"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
