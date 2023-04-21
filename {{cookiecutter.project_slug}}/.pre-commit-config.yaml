@@ -52,10 +52,16 @@ repos:
       - id: poetry-lock
       - id: poetry-export
         name: poetry-export-local
-        args: [ "-f", "requirements.txt", "-o", "requirements/local.txt" ]
+        args: [ "--without-hashes", "-f", "requirements.txt", "-o", "requirements/local.txt" ]
       - id: poetry-export
         name: poetry-export-production
-        args: [ "-f", "requirements.txt", "-o", "requirements/production.txt", "--extras", "production" ]
+        args: [ "--without-hashes", "-f", "requirements.txt", "-o", "requirements/production.txt", "--extras", "production" ]
+
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.8.0
+    hooks:
+      - id: pretty-format-toml
+        args: [--autofix]
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
