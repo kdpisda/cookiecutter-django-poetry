@@ -16,11 +16,13 @@ Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings
 
 ## Basic Commands
 
-### Setting the environment and installing the requirements
+### Setting the environment and installing the requirements locally
 
 ```shell
 $ poetry shell
 $ poetry install
+$ git init # A git repo is required for pre-commit to install
+$ pre-commit install
 ```
 
 ### Setting Up Your Users
