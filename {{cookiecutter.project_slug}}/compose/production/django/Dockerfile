@@ -24,7 +24,7 @@ ENV DJANGO_AZURE_ACCOUNT_NAME=${DJANGO_AZURE_ACCOUNT_NAME}
 RUN npm run build
 
 {%- endif %}
-# define an alias for the specfic python version used in this file.
+# define an alias for the specific python version used in this file.
 FROM python:3.11.3-slim-bullseye as python
 
 # Python build stage
@@ -36,16 +36,19 @@ ARG BUILD_ENVIRONMENT=production
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
-  # psycopg2 dependencies
-  libpq-dev
+  # psycopg2 dependencies`
+  libpq-dev \
+  # Install Poetry
+  curl \
+  && curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry bash \
+  && ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements .
+# Copy pyproject.toml and poetry.lock files
+COPY pyproject.toml poetry.lock ./
 
-# Create Python Dependency and Sub-Dependency Wheels.
-RUN pip wheel --wheel-dir /usr/src/app/wheels  \
-  -r ${BUILD_ENVIRONMENT}.txt
-
+# Set the virtualenv creation to false and install dependencies using Poetry
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-root --no-dev
 
 # Python 'run' stage
 FROM python as python-run-stage
@@ -62,7 +65,6 @@ WORKDIR ${APP_HOME}
 RUN addgroup --system django \
     && adduser --system --ingroup django django
 
-
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg2 dependencies
@@ -73,13 +75,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
-# copy python dependency wheels from python-build-stage
-COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
-
-# use wheels to install python dependencies
-RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-  && rm -rf /wheels/
+# Copy the installed dependencies from the build stage
+COPY --from=python-build-stage /opt/poetry /opt/poetry
+RUN ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 
 COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint

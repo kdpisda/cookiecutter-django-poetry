@@ -36,7 +36,6 @@ jobs:
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.0
 
-  # With no caching at all the entire ci process takes 4m 30s to complete!
   pytest:
     runs-on: ubuntu-latest
     {%- if cookiecutter.use_docker == 'n' %}
@@ -85,15 +84,23 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: pip
-          cache-dependency-path: |
-            requirements/local.txt
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Cache Poetry virtual environment
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: {% raw %}${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}{% endraw %}
+          restore-keys: |
+            {% raw %}${{ runner.os }}-poetry-{% endraw %}
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements/local.txt
+          poetry install
 
       - name: Test with pytest
-        run: pytest
+        run: poetry run pytest
       {%- endif %}

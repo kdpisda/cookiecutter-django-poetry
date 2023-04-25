@@ -13,6 +13,7 @@ pin: True
 # default: empty
 label_prs: update
 
+# Won't work as PyUp doesn't have native support for poetry
 requirements:
   - "requirements.txt"
   - "docs/requirements.txt"
