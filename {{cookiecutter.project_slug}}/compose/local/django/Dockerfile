@@ -1,4 +1,4 @@
-# define an alias for the specfic python version used in this file.
+# define an alias for the specific python version used in this file.
 FROM python:3.11.3-slim-bullseye as python
 
 # Python build stage
@@ -11,15 +11,19 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
   # psycopg2 dependencies
-  libpq-dev
+  libpq-dev \
+  # Install poetry
+  && pip install --no-cache-dir poetry
 
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements .
+# Set up a working directory
+WORKDIR /app
 
-# Create Python Dependency and Sub-Dependency Wheels.
-RUN pip wheel --wheel-dir /usr/src/app/wheels  \
-  -r ${BUILD_ENVIRONMENT}.txt
+# Copy pyproject.toml and poetry.lock
+COPY pyproject.toml poetry.lock /app/
 
+# Install dependencies using poetry
+RUN poetry config virtualenvs.create false \
+  && poetry install $(test "$BUILD_ENVIRONMENT" = production && echo "--without dev") --no-interaction --no-ansi
 
 # Python 'run' stage
 FROM python as python-run-stage
@@ -43,13 +47,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
-# copy python dependency wheels from python-build-stage
-COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
-
-# use wheels to install python dependencies
-RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-	&& rm -rf /wheels/
+# Copy installed dependencies from the build stage
+COPY --from=python-build-stage /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
