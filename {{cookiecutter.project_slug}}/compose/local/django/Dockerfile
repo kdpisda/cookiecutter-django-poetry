@@ -15,15 +15,13 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # Install poetry
   && pip install --no-cache-dir poetry
 
-# Set up a working directory
-WORKDIR /app
-
-# Copy pyproject.toml and poetry.lock
-COPY pyproject.toml poetry.lock /app/
+# Copy pyproject.toml
+COPY pyproject.toml .
 
 # Install dependencies using poetry
-RUN poetry config virtualenvs.create false \
-  && poetry install $(test "$BUILD_ENVIRONMENT" = production && echo "--without dev") --no-interaction --no-ansi
+RUN poetry lock \
+  && poetry config virtualenvs.create false \
+  && poetry install --no-interaction --no-ansi
 
 # Python 'run' stage
 FROM python as python-run-stage
@@ -38,12 +36,10 @@ ENV BUILD_ENV ${BUILD_ENVIRONMENT}
 WORKDIR ${APP_HOME}
 
 # Install required system dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  # psycopg2 dependencies
-  libpq-dev \
-  # Translations dependencies
-  gettext \
-  # cleaning up unused files
+RUN apt-get update \
+  && apt-get install --no-install-recommends -y \
+    libpq-dev \
+    gettext \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 

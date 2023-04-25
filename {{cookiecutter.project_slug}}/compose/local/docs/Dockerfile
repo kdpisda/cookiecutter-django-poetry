@@ -17,14 +17,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-# Set up a working directory
-WORKDIR /app
-
-# Copy pyproject.toml and poetry.lock
-COPY pyproject.toml poetry.lock /app/
+# Copy pyproject.toml
+COPY pyproject.toml .
 
 # Install dependencies using poetry
-RUN poetry config virtualenvs.create false \
+RUN poetry lock \
+  && poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi
 
 # Python 'run' stage
