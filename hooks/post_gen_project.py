@@ -15,6 +15,7 @@ import os
 import random
 import shutil
 import string
+import subprocess
 
 try:
     # Inspired by
@@ -411,6 +412,25 @@ def remove_storages_module():
     os.remove(os.path.join("{{cookiecutter.project_slug}}", "utils", "storages.py"))
 
 
+def run_command(command):
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+
+    if stdout:
+        print(stdout.decode("utf-8"))
+
+    if stderr:
+        print(stderr.decode("utf-8"))
+
+
+def initiate_poetry():
+    # Change the current working directory to the generated project directory
+    # os.chdir(os.getcwd())
+
+    # Run poetry shell and poetry install
+    run_command("poetry install")
+
+
 def main():
     debug = "{{ cookiecutter.debug }}".lower() == "y"
 
@@ -499,6 +519,8 @@ def main():
 
     if "{{ cookiecutter.use_async }}".lower() == "n":
         remove_async_files()
+
+    initiate_poetry()
 
     print(SUCCESS + "Project initialized, keep up the good work!" + TERMINATOR)
 

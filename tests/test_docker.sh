@@ -11,8 +11,10 @@ mkdir -p .cache/docker
 cd .cache/docker
 
 # create the project using the default settings in cookiecutter.json
-cookiecutter ../../ --no-input --overwrite-if-exists use_docker=y "$@"
+cookiecutter ../../ --verbose --no-input --overwrite-if-exists use_docker=y "$@"
 cd my_awesome_project
+
+poetry install
 
 # make sure all images build
 docker-compose -f local.yml build
