@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 COPY pyproject.toml poetry.lock .
 
 # Install dependencies using poetry
-RUN poetry config virtualenvs.create false \
+RUN poetry lock \
+  && poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi
 
 # Python 'run' stage
