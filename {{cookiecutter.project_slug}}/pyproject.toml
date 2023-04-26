@@ -18,6 +18,7 @@ django-allauth = "0.54.0"
 django-crispy-forms = "2.0"
 crispy-bootstrap5 = "0.7"
 django-redis = "5.2.0"
+psycopg2 = "^2.6.9"
 
 # Optional dependencies
 {% if cookiecutter.frontend_pipeline == 'Django Compressor' %}
@@ -49,11 +50,12 @@ uvicorn = {extras = ["standard"], version = "0.21.1"}
 {% endif %}
 
 # Production Dependencies
-gunicorn={version="^20.1.0",extras=["production"]}
-psycopg2={version="^2.6.9",extras=["production"]}
+[tool.poetry.group.production.dependencies]
+gunicorn={version="^20.1.0"}
+psycopg2={version="^2.6.9"}
 
 {% if cookiecutter.use_whitenoise == 'n' %}
-collectfast={version="^2.2.0",extras=["production"]}
+collectfast={version="^2.2.0"}
 {% endif %}
 
 {% if cookiecutter.use_sentry == "y" %}
@@ -61,51 +63,40 @@ sentry-sdk={version="^1.20.0",extras=["django"]}
 {% endif %}
 
 {% if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" %}
-hiredis={version="^2.2.2",extras=["production"]}
+hiredis={version="^2.2.2"}
 {% endif %}
 
 {% if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" %}
-hiredis = { version = "^2.2.2", extras = ["production"] }
+hiredis = { version = "^2.2.2"}
 {% endif %}
 
 {% if cookiecutter.cloud_provider == 'AWS' %}
-django-storages = { version = "^1.13.2", extras = ["boto3", "production"] }
+django-storages = { version = "^1.13.2", extras = ["boto3"] }
 {% elif cookiecutter.cloud_provider == 'GCP' %}
-django-storages = { version = "^1.13.2", extras = ["google", "production"] }
+django-storages = { version = "^1.13.2", extras = ["google"] }
 {% elif cookiecutter.cloud_provider == 'Azure' %}
-django-storages = { version = "^1.13.2", extras = ["azure", "production"] }
+django-storages = { version = "^1.13.2", extras = ["azure"] }
 {% endif %}
 
 {% if cookiecutter.mail_service == 'Mailgun' %}
-django-anymail = { version = "^9.1", extras = ["mailgun", "production"] }
+django-anymail = { version = "^9.1", extras = ["mailgun"] }
 {% elif cookiecutter.mail_service == 'Amazon SES' %}
-django-anymail = { version = "^9.1", extras = ["amazon_ses", "production"] }
+django-anymail = { version = "^9.1", extras = ["amazon_ses"] }
 {% elif cookiecutter.mail_service == 'Mailjet' %}
-django-anymail = { version = "^9.1", extras = ["mailjet", "production"] }
+django-anymail = { version = "^9.1", extras = ["mailjet"] }
 {% elif cookiecutter.mail_service == 'Mandrill' %}
-django-anymail = { version = "^9.1", extras = ["mandrill", "production"] }
+django-anymail = { version = "^9.1", extras = ["mandrill"] }
 {% elif cookiecutter.mail_service == 'Postmark' %}
-django-anymail = { version = "^9.1", extras = ["postmark", "production"] }
+django-anymail = { version = "^9.1", extras = ["postmark"] }
 {% elif cookiecutter.mail_service == 'Sendgrid' %}
-django-anymail = { version = "^9.1", extras = ["sendgrid", "production"] }
+django-anymail = { version = "^9.1", extras = ["sendgrid"] }
 {% elif cookiecutter.mail_service == 'SendinBlue' %}
-django-anymail = { version = "^9.1", extras = ["sendinblue", "production"] }
+django-anymail = { version = "^9.1", extras = ["sendinblue"] }
 {% elif cookiecutter.mail_service == 'SparkPost' %}
-django-anymail = { version = "^9.1", extras = ["sparkpost", "production"] }
+django-anymail = { version = "^9.1", extras = ["sparkpost"] }
 {% elif cookiecutter.mail_service == 'Other SMTP' %}
-django-anymail = { version = "^9.1", extras = ["production"] }
+django-anymail = { version = "^9.1" }
 {% endif %}
-
-[tool.poetry.extras]
-production = [
-  "gunicorn",
-  "psycopg2",
-  {% if cookiecutter.use_whitenoise == 'n' %}"collectfast",{% endif %}
-  {% if cookiecutter.use_sentry == "y" %}"sentry-sdk",{% endif %}
-  {% if cookiecutter.use_docker == "n" and cookiecutter.windows == "y" %}"hiredis",{% endif %}
-  "django-storages",
-  "django-anymail"
-]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
